@@ -28,7 +28,7 @@ def connect():
         print(db_version)
 
         # Execute a query
-        cur.execute("SELECT * FROM funcionario")
+        cur.execute('SELECT a.descricao FROM atividade AS a JOIN atividade_projeto AS ap ON a.codigo = ap.codAtividade')
 
         # Retrieve query results
         records = cur.fetchall()
