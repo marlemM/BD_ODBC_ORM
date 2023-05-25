@@ -1,26 +1,35 @@
 import psycopg2
 
-# Define a conexão com o banco de dados
-conn_string = "dbname=equipeBD user=postgres password=postgres host=localhost port=5432"
-conn = psycopg2.connect(conn_string)
+def connect():
+    """ Connect to the PostgreSQL database server """
+    conn = None
+    try:
+        # connect to the PostgreSQL server
+        print('Connecting to the PostgreSQL database...')
+        conn = psycopg2.connect(
+            host=('172.19.0.3'),
+            database=('equipebd'),
+            user=('postgres'),
+            password=('postgres')
+        )
 
-# Define o código do projeto para listar as atividades
-projeto_codigo = 1
+        # create a cursor
+        cur = conn.cursor()
 
-# Executa a consulta SQL para obter as atividades do projeto
-query = f"""
-SELECT a.codigo, a.descricao, a.dataInicio, a.dataFim, a.situacao, a.dataConclusao
-FROM atividade a
-JOIN atividade_projeto ap ON a.codigo = ap.codAtividade
-WHERE ap.codProjeto = {projeto_codigo}
-"""
-cursor = conn.cursor()
-cursor.execute(query)
+        # execute a statement to select the activities of a specific project (in this case, the project with code 1)
+        cur.execute('SELECT a.descricao FROM atividade AS a JOIN atividade_projeto AS ap ON a.codigo = ap.codAtividade WHERE ap.codProjeto = 1')
 
-# Exibe os resultados da consulta
-for row in cursor.fetchall():
-    codigo, descricao, dataInicio, dataFim, situacao, dataConclusao = row
-    print(f"Código: {codigo}, Descrição: {descricao}, Data de Início: {dataInicio}, Data de Fim: {dataFim}, Situação: {situacao}, Data de Conclusão: {dataConclusao}")
+        # retrieve query results
+        records = cur.fetchall()
+        print("Total number of rows:", cur.rowcount)
+        for row in records:
+            print(row[0])
 
-# Fecha a conexão com o banco de dados
-conn.close()
+        # close the communication with the PostgreSQL
+        cur.close()
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+    finally:
+        if conn is not None:
+            conn.close()
+            print('Database connection closed.')
