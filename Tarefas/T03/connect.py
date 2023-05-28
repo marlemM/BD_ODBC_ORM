@@ -1,14 +1,9 @@
 import psycopg2
-"""
-Foi necessário dar permissões ao usuário para acessar os dados.
-GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO empresa_user;
-"""
+
 def connect():
-    """ Connect to the PostgreSQL database server """
     conn = None
     try:
-        # connect to the PostgreSQL server
-        print('Connecting to the PostgreSQL database...')
+        # Conectar ao banco de dados PostgreSQL
         conn = psycopg2.connect(
             host='localhost',
             database='equipebd',
@@ -16,34 +11,33 @@ def connect():
             password='admin'
         )
 
-        # create a cursor
+        # Criar um cursor
         cur = conn.cursor()
 
-	# execute a statement
-        print('PostgreSQL database version:')
+        # Exibir a versão do servidor PostgreSQL
+        print('Versão do PostgreSQL:')
         cur.execute('SELECT version()')
-
-        # display the PostgreSQL database server version
         db_version = cur.fetchone()
         print(db_version)
 
-        # Execute a query
-        cur.execute('SELECT a.descricao FROM atividade AS a JOIN atividade_projeto AS ap ON a.codigo = ap.codAtividade')
+        # Consulta para listar as atividades de um projeto
+        projeto_id = 1  # ID do projeto desejado
+        cur.execute('SELECT a.descricao FROM atividade AS a JOIN atividade_projeto AS ap ON a.codigo = ap.codAtividade WHERE ap.codProjeto = %s', (projeto_id,))
 
-        # Retrieve query results
+        # Obter os resultados da consulta
         records = cur.fetchall()
-        print("Total number of rows:", cur.rowcount)
+        print("Número total de linhas:", cur.rowcount)
         for row in records:
-            print(row)
+            print(row[0])
 
-	# close the communication with the PostgreSQL
+        # Fechar a comunicação com o PostgreSQL
         cur.close()
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
     finally:
         if conn is not None:
             conn.close()
-            print('Database connection closed.')
+            print('Conexão com o banco de dados fechada.')
 
 
 if __name__ == '__main__':
