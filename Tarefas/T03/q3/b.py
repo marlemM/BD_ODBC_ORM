@@ -1,45 +1,40 @@
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, MetaData
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, ForeignKey
 
-# Conecte ao banco de dados
-engine = create_engine('postgresql://postgres:admin@localhost:5432/equipebd')
+# Define the database connection URL
+db_url = 'postgresql://postgres:admin@localhost/equipebd'
 
-# Crie uma sessão 
+# Create the SQLAlchemy engine
+engine = create_engine(db_url)
+
+# Create a session factory
 Session = sessionmaker(bind=engine)
 session = Session()
 
-# Declare uma base para mapeamento
-Base = declarative_base()
+def connect():
+    try:
+        # Get the version of the PostgreSQL server
+        db_version = session.execute('SELECT version()').scalar()
+        print('Versão do PostgreSQL:')
+        print(db_version)
 
-# Classe que representa a tabela Atividade
-class Atividade(Base):
-   __tablename__ = 'atividade'
-   codigo = Column(Integer, primary_key=True)
-   descricao = Column(String)
-   
-# Classe que representa a relação entre Atividade e Projeto   
-class AtividadeProjeto(Base):
-   __tablename__ = 'atividade_projeto' 
-   codAtividade = Column(Integer, ForeignKey('atividade.codigo'), primary_key=True)
-   codProjeto = Column(Integer, primary_key=True)
+        # Query to list the activities of a project
+        projeto_id = 1  # ID do projeto desejado
+        atividades = session.execute(
+            'SELECT a.descricao FROM atividade AS a JOIN atividade_projeto AS ap ON a.codigo = ap.codAtividade WHERE ap.codProjeto = :projeto_id',{'projeto_id': projeto_id}
+        ).fetchall()
 
-# Escalar as mudanças para o banco de dados   
-Base.metadata.create_all(engine)
+        # Print the results
+        print("Número total de linhas:", len(atividades))
+        for row in atividades:
+            print(row[0])
+    except Exception as error:
+        print(error)
+    finally:
+        # Close the session
+        session.close()
+        print('Conexão com o banco de dados fechada.')
 
-# Selecione o ID do projeto
-projeto_id = 1
 
-# Obtenha atividades para esse projeto  
-atividades = session.query(Atividade).\
-       join(AtividadeProjeto).\
-       filter(AtividadeProjeto.codProjeto == projeto_id).\
-       all()
-
-# Imprima as descrições das atividades       
-for atividade in atividades:
-    print(atividade.descricao)
-
-# Feche a sessão         
-session.close()
+if __name__ == '__main__':
+    connect()
