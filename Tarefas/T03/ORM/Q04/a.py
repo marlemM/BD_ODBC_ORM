@@ -23,6 +23,7 @@ def gerar_funcionarios(num_funcionarios):
         query = "INSERT INTO funcionario (nome, sexo, dataNasc, salario, supervisor, depto) VALUES (%s, %s, %s, %s, %s, %s)"
         values = (nome, sexo, data_nasc, salario, supervisor, depto)
         cur.execute(query, values)
+        print(f"Inserido funcionário: {nome}")
 
 # Função para gerar um número aleatório de departamentos
 def gerar_departamentos(num_departamentos):
@@ -33,6 +34,7 @@ def gerar_departamentos(num_departamentos):
         query = "INSERT INTO departamento (sigla, descricao, gerente) VALUES (%s, %s, %s)"
         values = (sigla, descricao, gerente)
         cur.execute(query, values)
+        print(f"Inserido departamento: {sigla}")
 
 # Função para gerar um número aleatório de equipes
 def gerar_equipes(num_equipes):
@@ -41,6 +43,7 @@ def gerar_equipes(num_equipes):
         query = "INSERT INTO equipe (nomeEquipe) VALUES (%s)"
         values = (nome_equipe,)
         cur.execute(query, values)
+        print(f"Inserido equipe: {nome_equipe}")
 
 # Função para gerar um número aleatório de membros
 def gerar_membros(num_membros, num_funcionarios, num_equipes):
@@ -50,6 +53,7 @@ def gerar_membros(num_membros, num_funcionarios, num_equipes):
         query = "INSERT INTO membro (codEquipe, codFuncionario) VALUES (%s, %s)"
         values = (cod_equipe, cod_funcionario)
         cur.execute(query, values)
+        print(f"Inserido membro: Equipe {cod_equipe}, Funcionário {cod_funcionario}")
 
 # Definindo o número de linhas para cada tabela
 num_funcionarios = 10
