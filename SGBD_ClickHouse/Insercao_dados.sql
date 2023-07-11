@@ -41,7 +41,7 @@ INSERT INTO estoque (id, ingrediente, quantidade)
 VALUES (2, 'Molho branco, Queijo mussarela', 10);
 
 INSERT INTO estoque (id, ingrediente, quantidade)
-VALUES (3, 'Molho branoo Frango', 10);
+VALUES (3, 'Molho branco Frango', 10);
 
 INSERT INTO estoque (id, ingrediente, quantidade)
 VALUES (4, 'Molho branco, Bacon', 10);
